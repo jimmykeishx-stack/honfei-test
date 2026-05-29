@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import Lenis from "lenis";
@@ -19,10 +18,6 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-
-const DishThree = dynamic(() => import("@/components/three-scenes").then((mod) => mod.DishThree), {
-  ssr: false
-});
 
 const phone = "0711587156";
 const whatsapp = "https://wa.me/254711587156?text=Hello%20Hongfei%20Palm%20Restaurant%2C%20I%27d%20like%20to%20reserve%20a%20table.";
@@ -95,75 +90,6 @@ const gallery = [
   ["Family garden seating", localImage("IMG-20260525-WA0228.jpg")],
   ["Crisped Chinese lamb", localImage("IMG-20260525-WA0229.jpg")],
   ["Whole fish in sauce", localImage("IMG-20260525-WA0231.jpg")]
-];
-
-const dishes = [
-  {
-    name: "Mist Valley Dumplings",
-    category: "Dumplings",
-    price: "KSh 1,250",
-    spice: 1,
-    image: localImage("IMG-20260525-WA0153.jpg"),
-    description: "Silken hand-folded dumplings, ginger vinegar, scallion oil.",
-    ingredients: "Prawn, chicken, ginger, chive, black vinegar.",
-    notes: "Built for sharing at the beginning of a slow table.",
-    pairing: "Jasmine silver needle tea"
-  },
-  {
-    name: "Limuru Hotpot Ritual",
-    category: "Hotpot",
-    price: "KSh 3,900",
-    spice: 3,
-    image: localImage("IMG-20260525-WA0229.jpg"),
-    description: "Aromatic broth, mountain greens, sliced beef, handmade sauces.",
-    ingredients: "Beef, mushrooms, greens, tofu, Sichuan pepper, sesame paste.",
-    notes: "Best for families, friends, and cold Limuru evenings.",
-    pairing: "Plum highball"
-  },
-  {
-    name: "Amber Road Prawns",
-    category: "Seafood",
-    price: "KSh 2,650",
-    spice: 2,
-    image: localImage("IMG-20260525-WA0231.jpg"),
-    description: "Wok-seared prawns, garlic, soft chilli, warm citrus glaze.",
-    ingredients: "Tiger prawns, citrus, garlic, Shaoxing, mild chilli.",
-    notes: "A bright dish designed for late lunches and highway arrivals.",
-    pairing: "Crisp lychee spritz"
-  },
-  {
-    name: "Charcoal Duck Pancakes",
-    category: "Dumplings",
-    price: "KSh 2,450",
-    spice: 1,
-    image: localImage("IMG-20260525-WA0223.jpg"),
-    description: "Lacquered duck, paper-thin pancakes, cucumber, hoisin.",
-    ingredients: "Duck, cucumber, scallion, house hoisin, soft pancakes.",
-    notes: "A quiet nod to Shanghai dining, stripped back and modern.",
-    pairing: "Warm oolong"
-  },
-  {
-    name: "Cloud Tea Service",
-    category: "Tea",
-    price: "KSh 850",
-    spice: 0,
-    image: localImage("IMG-20260525-WA0136.jpg"),
-    description: "A slow tea flight for the cool air outside Nairobi.",
-    ingredients: "Jasmine, oolong, pu-erh, seasonal infusion.",
-    notes: "Served for resetting the pace of the day.",
-    pairing: "Sesame cloud dessert"
-  },
-  {
-    name: "Burgundy Lantern Sour",
-    category: "Cocktails",
-    price: "KSh 1,100",
-    spice: 0,
-    image: localImage("IMG-20260525-WA0139.jpg"),
-    description: "Plum, citrus, Kenyan honey, restrained smoke.",
-    ingredients: "Plum cordial, lemon, honey, bitters, smoke rinse.",
-    notes: "Made for couples and late evening detours.",
-    pairing: "Amber Road Prawns"
-  }
 ];
 
 function SectionLabel({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
@@ -350,95 +276,97 @@ function Hero() {
 }
 
 function MenuSection() {
-  const [active, setActive] = useState("All");
-  const [selected, setSelected] = useState<(typeof dishes)[number] | null>(null);
-  const categories = ["All", "Dumplings", "Hotpot", "Seafood", "Tea", "Cocktails", "Desserts"];
-  const visible = active === "All" ? dishes : dishes.filter((dish) => dish.category === active);
+  const [view, setView] = useState<"page1" | "page2">("page1");
+  const menuPages = [
+    { key: "page1", title: "Menu Page 1", src: "/hongfei/menu-a3-1.pdf" },
+    { key: "page2", title: "Menu Page 2", src: "/hongfei/menu-a3-2.pdf" }
+  ];
+  const activeMenu = menuPages.find((page) => page.key === view) ?? menuPages[0];
 
   return (
-    <section id="menu" className="cinematic-section relative px-5 py-28 md:px-8 md:py-36">
-      <div className="absolute inset-0 bg-[#121212]" />
-      <div className="fog-layer slow opacity-50" />
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <SectionLabel eyebrow="Signature menu" title="Worth The Detour" copy="Signature dishes crafted for long conversations and slower evenings." />
-        <div className="mt-12 flex gap-3 overflow-x-auto pb-2 horizontal-scroll" role="tablist" aria-label="Menu categories">
-          {categories.map((category) => (
+    <section id="menu" className="cinematic-section relative overflow-hidden px-5 py-24 md:px-8 md:py-36">
+      <div className="absolute inset-0 bg-[#0b0b0d]" />
+      <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#C6A972]/10 blur-[140px]" />
+      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-[#1F3A2E]/18 blur-[150px]" />
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <p className="mb-5 text-xs uppercase tracking-[0.42em] text-[#C6A972]">Menu</p>
+          <h2 className="font-serif text-5xl font-semibold leading-none text-[#F5F1E8] md:text-7xl">Our Menu</h2>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[#F5F1E8]/62 md:text-lg">
+            Browse the original Hongfei Palm menu in a calm, framed viewing experience made for planning your Limuru detour.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.75, delay: 0.12 }}
+          className="mx-auto mt-10 grid max-w-xl gap-3 rounded-[1.4rem] border border-white/10 bg-white/[0.035] p-2 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:grid-cols-2"
+          role="tablist"
+          aria-label="Menu view options"
+        >
+          {menuPages.map((page) => (
             <button
-              key={category}
-              onClick={() => setActive(category)}
-              className={`relative shrink-0 rounded-full border px-5 py-3 text-sm transition-all duration-500 ${
-                active === category ? "border-[#C6A972]/70 bg-[#C6A972]/16 text-[#F5F1E8] shadow-[0_0_32px_rgba(198,169,114,0.16)]" : "border-white/10 bg-white/[0.03] text-[#F5F1E8]/62 hover:border-[#C6A972]/35"
+              key={page.key}
+              onClick={() => setView(page.key as "page1" | "page2")}
+              className={`rounded-[1rem] border px-5 py-3 text-sm transition-all duration-500 ${
+                view === page.key
+                  ? "border-[#C6A972]/55 bg-[#C6A972]/16 text-[#F5F1E8] shadow-[0_0_36px_rgba(198,169,114,0.13)]"
+                  : "border-transparent text-[#F5F1E8]/58 hover:border-white/10 hover:bg-white/[0.04] hover:text-[#F5F1E8]"
               }`}
+              role="tab"
+              aria-selected={view === page.key}
             >
-              {category}
+              {page.title}
             </button>
           ))}
-        </div>
-        <div className="mt-10 flex gap-5 overflow-x-auto pb-10 horizontal-scroll">
-          {visible.map((dish, index) => (
-            <motion.button
-              key={dish.name}
-              onClick={() => setSelected(dish)}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.8, delay: index * 0.08 }}
-              whileHover={{ y: -10, rotateX: 2, rotateY: -2 }}
-              className="group relative h-[520px] w-[82vw] shrink-0 overflow-hidden rounded-[2rem] border border-white/10 bg-[#0B0B0B] text-left shadow-2xl shadow-black/30 sm:w-[390px]"
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.85, delay: 0.18 }}
+          className="mt-10 overflow-hidden rounded-[2rem] border border-white/10 bg-[#111113]/90 p-3 shadow-[0_40px_140px_rgba(0,0,0,0.48)] backdrop-blur-xl md:p-5"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeMenu.key}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.45 }}
+              className="overflow-hidden rounded-[1.45rem] border border-[#C6A972]/16 bg-[#0B0B0B]"
             >
-              <Image src={dish.image} alt={dish.name} fill sizes="(max-width: 640px) 82vw, 390px" className="object-cover opacity-78 transition duration-700 group-hover:scale-105 group-hover:opacity-92" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0B] via-[#0B0B0B]/28 to-transparent" />
-              <div className="absolute inset-0 opacity-0 ring-1 ring-inset ring-[#C6A972]/50 transition duration-700 group-hover:opacity-100" />
-              <div className="absolute left-6 right-6 top-6 flex items-center justify-between">
-                <span className="rounded-full border border-white/15 bg-black/35 px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#F5F1E8]/75 backdrop-blur-xl">{dish.category}</span>
-                <span className="text-sm text-[#C6A972]">{dish.price}</span>
+              <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+                <p className="text-xs uppercase tracking-[0.28em] text-[#F5F1E8]/58">{activeMenu.title}</p>
+                <span className="h-2 w-2 rounded-full bg-[#C6A972]/70 shadow-[0_0_20px_rgba(198,169,114,0.65)]" />
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <div className="mb-5 flex gap-1" aria-label={`${dish.spice} spice level`}>
-                  {[0, 1, 2].map((level) => (
-                    <span key={level} className={`h-1.5 w-8 rounded-full ${level < dish.spice ? "bg-[#C6A972]" : "bg-white/16"}`} />
-                  ))}
-                </div>
-                <h3 className="font-serif text-4xl font-semibold text-[#F5F1E8]">{dish.name}</h3>
-                <p className="mt-3 text-sm leading-7 text-[#F5F1E8]/64">{dish.description}</p>
-              </div>
-              <span className="steam-line left-[28%]" />
-              <span className="steam-line left-[62%] [animation-delay:1.4s]" />
-            </motion.button>
-          ))}
-          <div className="relative hidden h-[520px] w-[390px] shrink-0 overflow-hidden rounded-[2rem] border border-[#C6A972]/20 bg-[#0B0B0B]/80 md:block">
-            <DishThree />
-          </div>
+              <iframe
+                src={`${activeMenu.src}#toolbar=1&navpanes=0&view=FitH`}
+                title={`${activeMenu.title} PDF viewer`}
+                className="h-[620px] w-full bg-[#F5F1E8] md:h-[820px]"
+              />
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="mt-10 rounded-[1.5rem] border border-white/10 bg-white/[0.025] p-6 text-center shadow-[0_24px_80px_rgba(0,0,0,0.24)] md:p-8">
+          <p className="text-sm leading-7 text-[#F5F1E8]/64">Prefer a guided recommendation? Message us and we will help you choose dishes for couples, family hotpot, or group dining.</p>
+          <Button asChild className="mt-5 bg-[#4B1E24] text-[#F5F1E8] hover:bg-[#5A2630]">
+            <a href={whatsapp} target="_blank" rel="noreferrer">
+              Order or Reserve on WhatsApp
+            </a>
+          </Button>
         </div>
       </div>
-      <AnimatePresence>
-        {selected && (
-          <motion.div className="fixed inset-0 z-[70] grid place-items-center bg-black/75 p-4 backdrop-blur-xl" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} role="dialog" aria-modal="true">
-            <motion.div initial={{ opacity: 0, y: 40, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.98 }} className="relative grid max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0B0B0B] md:grid-cols-[1.05fr_0.95fr]">
-              <button onClick={() => setSelected(null)} className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-black/45 text-[#F5F1E8] backdrop-blur-xl" aria-label="Close dish details">
-                <X size={18} />
-              </button>
-              <div className="relative min-h-[360px]">
-                <Image src={selected.image} alt={selected.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B0B]/80 to-transparent md:bg-gradient-to-r" />
-              </div>
-              <div className="p-8 md:p-12">
-                <p className="text-xs uppercase tracking-[0.34em] text-[#C6A972]">{selected.category}</p>
-                <h3 className="mt-5 font-serif text-5xl font-semibold text-[#F5F1E8]">{selected.name}</h3>
-                <p className="mt-4 text-xl text-[#C6A972]">{selected.price}</p>
-                <div className="mt-8 space-y-6 text-sm leading-7 text-[#F5F1E8]/68">
-                  <p><span className="text-[#F5F1E8]">Ingredients:</span> {selected.ingredients}</p>
-                  <p><span className="text-[#F5F1E8]">Chef notes:</span> {selected.notes}</p>
-                  <p><span className="text-[#F5F1E8]">Pairing:</span> {selected.pairing}</p>
-                </div>
-                <Button asChild className="mt-9">
-                  <a href="#reservations" onClick={() => setSelected(null)}>Reserve for this dish</a>
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
